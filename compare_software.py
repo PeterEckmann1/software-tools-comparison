@@ -8,17 +8,13 @@ def normalize(str):
     return str.replace('-', '-').replace('‐', '-')
 
 
-sciscore = []
 sciscore_hashes = []  # "hash" here means a string that combines the PMCID and tool name
 for row in csv.reader(open('sciscore_software_tools.csv', 'r')):
     if row[0] != 'PMCID':
-        sciscore.append(row)
         sciscore_hashes.append(row[0] + normalize(row[1]))
-softcite = []
 softcite_hashes = []
 for row in csv.reader(open('softcite_software_tools.csv', 'r')):
     if row[0] != 'article_pmcid' and row[1].strip() != '':
-        softcite.append(row[:3])
         softcite_hashes.append(row[0] + normalize(row[1]))
 full_list = list(set(sciscore_hashes + softcite_hashes))
 agreements = set(sciscore_hashes).intersection(softcite_hashes)
@@ -42,8 +38,9 @@ for h in full_list:
         real.append(True)
     elif h in disagreements:
         real.append(hash_to_decision[h])
-        if hash_to_decision[h] and h not in softcite_hashes:
-            print(h)
+        # uncomment to look at individual examples
+        # if hash_to_decision[h] and h not in softcite_hashes:
+        #     print(h)
     sciscore.append(h in sciscore_hashes)
     softcite.append(h in softcite_hashes)
 real = np.array(real)
